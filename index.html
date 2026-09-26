@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Target Rush</title>
+<style>
+  :root{--bg:#0b1020;--panel:#111b2e;--fg:#edf6ff;--accent:#7df9c2;--danger:#ff6b6b}
+  *{box-sizing:border-box}
+  body{margin:0;display:grid;place-items:center;min-height:100vh;background:radial-gradient(circle at top,#17233d,#0b1020 60%);font-family:system-ui,sans-serif;color:var(--fg)}
+  #game{width:min(92vw,420px);background:rgba(17,27,46,.96);border:1px solid rgba(255,255,255,.12);border-radius:18px;padding:18px;box-shadow:0 25px 60px rgba(0,0,0,.35)}
+  h1{margin:0 0 10px;font-size:clamp(1.4rem,5vw,2rem);text-align:center}
+  .hud{display:flex;justify-content:space-between;margin:0 0 12px;padding:8px 12px;border-radius:10px;background:rgba(255,255,255,.04);font-weight:700}
+  #arena{position:relative;overflow:hidden;height:260px;border-radius:14px;background:linear-gradient(180deg,#0a1628,#101d31);border:1px solid rgba(255,255,255,.08)}
+  #target{position:absolute;left:50%;top:50%;width:52px;height:52px;border:none;border-radius:50%;background:radial-gradient(circle at 35% 35%,#fff7d6,#ffb703 38%,#ff7b00 75%,#d9480f);box-shadow:0 0 25px rgba(255,170,0,.7);cursor:pointer;transform:translate(-50%,-50%);font-size:1.5rem;font-weight:900;color:#fff}
+  .controls{display:flex;justify-content:center;margin-top:14px}
+  button{border:none;border-radius:10px;padding:10px 18px;font-weight:800;background:var(--accent);color:#0a1220;cursor:pointer}
+</style>
+</head>
+<body>
+<div id="game">
+  <h1>Target Rush</h1>
+  <div class="hud"><span>Score: <b id="score">0</b></span><span>Time: <b id="time">15</b></span></div>
+  <div id="arena"><button id="target" aria-label="target">+</button></div>
+  <div class="controls"><button id="restart">Play</button></div>
+</div>
+<script>
+const scoreEl=document.getElementById('score'),timeEl=document.getElementById('time'),target=document.getElementById('target'),restart=document.getElementById('restart'),arena=document.getElementById('arena');
+let score=0,time=15,playing=false,timer;
+function moveTarget(){
+  const r=arena.getBoundingClientRect();
+  const w=Math.max(0,r.width-60),h=Math.max(0,r.height-60);
+  const x=Math.random()*w,y=Math.random()*h;
+  target.style.left=x+'px';target.style.top=y+'px';
+  target.style.transform='scale('+(1+Math.random()*.5)+')';
+}
+function tick(){
+  if(!playing)return;
+  time--;
+  timeEl.textContent=time;
+  if(time<=0){
+    playing=false;target.style.display='none';alert('Game over! Final score: '+score);return;
+  }
+  timer=setTimeout(tick,1000);
+}
+target.addEventListener('click',()=>{if(!playing)return;score++;scoreEl.textContent=score;moveTarget();});
+restart.addEventListener('click',()=>{
+  clearTimeout(timer);score=0;time=15;playing=true;scoreEl.textContent='0';timeEl.textContent='15';target.style.display='block';moveTarget();tick();
+});
+moveTarget();
+</script>
+</body>
+</html>
